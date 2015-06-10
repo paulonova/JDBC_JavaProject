@@ -132,7 +132,35 @@ public class PessoaDAO implements GenericoDAO<PessoaDTO> {
 
 	@Override
 	public PessoaDTO buscarPorId(Integer id) throws PersistenceExceptions {
-		return null;
+		
+		PessoaDTO pessoaDTO = null;
+		
+		try {
+			Connection connection = ConexaoUtil.getInstance().getConnection();
+			String sql="SELECT * FROM tb_pessoa WHERE id_pessoa=?";
+			
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, id);					
+			ResultSet resultSet = statement.executeQuery();
+			
+			//IF because it´s just one person.
+			if(resultSet.next()){
+				pessoaDTO = new PessoaDTO();
+				pessoaDTO.setIdPessoa(resultSet.getInt("id_pessoa")); 
+				pessoaDTO.setNome(resultSet.getString("nome"));
+				pessoaDTO.setCpf(resultSet.getLong("cpf"));
+				pessoaDTO.setEndereco(resultSet.getString("endereco"));
+				pessoaDTO.setSexo(resultSet.getString("sexo").charAt(0));
+				pessoaDTO.setDtNasc(resultSet.getDate("dt_nasc"));
+			}
+			
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new PersistenceExceptions(e.getMessage(), e);
+		}
+		
+		return pessoaDTO;
 	}
 
 
