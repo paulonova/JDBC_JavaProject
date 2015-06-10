@@ -12,10 +12,7 @@ public class ConexaoUtil {
 	// Get the config file
 	private static ResourceBundle config;	
 	
-	public ConexaoUtil getMinhaMae() {
-		return null; 
-		
-	}
+	
 	
 	private ConexaoUtil() {
 		//Recovers the entire config file.
