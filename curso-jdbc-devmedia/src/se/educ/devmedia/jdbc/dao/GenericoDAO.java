@@ -2,16 +2,18 @@ package se.educ.devmedia.jdbc.dao;
 
 import java.util.List;
 
+import se.educ.devmedia.jdbc.exception.PersistenceExceptions;
+
 public interface GenericoDAO<T> {
 	
-	void insert(T object);
+	void insert(T object) throws PersistenceExceptions;
 	
-	void update(T object);
+	void update(T object) throws PersistenceExceptions;
 	
-	void delete(Integer id);
+	void delete(Integer id) throws PersistenceExceptions;
 	
-	List<T> listarTodos();
+	List<T> listarTodos() throws PersistenceExceptions;
 	
-	T buscarPorId(Integer id);
+	T buscarPorId(Integer id) throws PersistenceExceptions;
 
 }
