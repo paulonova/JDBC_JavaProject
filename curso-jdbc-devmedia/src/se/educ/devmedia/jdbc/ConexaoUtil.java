@@ -9,7 +9,7 @@ public class ConexaoUtil {
 	
 	private static ConexaoUtil conexaoUtil;
 	
-	// Get the config file
+	// Instantiate the config file
 	private static ResourceBundle config;	
 	
 	
