@@ -57,14 +57,21 @@ public class LoginFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				LoginDTO loginDTO = new LoginDTO();
 				loginDTO.setName(textUsername.getText());
-				loginDTO.setPassword(passField.getSelectedText()); 
+				loginDTO.setPassword(new String(passField.getPassword())); 
 				
 				LoginBO loginBO = new LoginBO();
-				boolean getBack = false;
+				
 				
 				try {
-					if (getBack = loginBO.Login(loginDTO)){
-						UsefulMessage.addMsg(LoginFrame.this, "Login successfully!"); 
+					if (loginBO.Login(loginDTO)){
+						// Close this frame..
+						LoginFrame.this.dispose();
+						
+						// to open next window
+						MainFrame mainFrame = new MainFrame();
+						mainFrame.setLocationRelativeTo(null); 
+						mainFrame.setVisible(true);
+						//UsefulMessage.addMsg(LoginFrame.this, "Login successfully!"); 
 					}else {
 						UsefulMessage.addMsg(LoginFrame.this, "Login failed!"); 
 					}

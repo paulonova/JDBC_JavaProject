@@ -7,7 +7,6 @@ import java.util.List;
 
 import se.educ.devmedia.jdbc.ConexaoUtil;
 import se.educ.devmedia.jdbc.dto.LoginDTO;
-import se.educ.devmedia.jdbc.dto.PessoaDTO;
 import se.educ.devmedia.jdbc.exception.PersistenceExceptions;
 
 public class LoginDAO implements GenericoDAO<LoginDTO>{
