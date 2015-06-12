@@ -14,10 +14,6 @@ public class PessoaDTO {
 	
 	
 	
-	
-	
-	
-	
 	public Integer getIdPessoa() {
 		return idPessoa;
 	}
