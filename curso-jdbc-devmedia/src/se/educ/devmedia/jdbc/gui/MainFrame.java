@@ -1,6 +1,6 @@
 package se.educ.devmedia.jdbc.gui;
 
-import java.awt.Color;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,246 +9,307 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.UIManager;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
+import javax.swing.LayoutStyle;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import se.educ.devmedia.jdbc.bo.PessoaBO;
 import se.educ.devmedia.jdbc.dto.PessoaDTO;
 import se.educ.devmedia.jdbc.util.UsefulMessage;
 
-import com.jgoodies.forms.factories.DefaultComponentFactory;
+import javax.swing.JTable;
 
 public class MainFrame extends JFrame {
 
+	private static final long serialVersionUID = 7973973234717597809L;
+	private JTabbedPane mainTabbedPane;
+	private JLabel lblSexo;
+	private JRadioButton rbtFeminino;
+	private JRadioButton rbtMasculino;
+	private JLabel lblEndereco;
+	private JTextField txtEndereco;
+	private JLabel lblCpf;
+	private JTextField txtNome;
+	private JLabel lblNome;
+	private JPanel panelListagem;
+	private JButton btnCadastrar;
+	private JButton btnLimpar;
+	private JTable tableListagem;
+	private JLabel lblNasc;
+	private JTextField txtNasc;
 	
-	private static final long serialVersionUID = 3202592430054659065L;
-	private JPanel contentPane;
 	private JPanel panelCadastro;
-	private JPanel panelList;
-	private JTextField txtName;
 	private JTextField txtCpf;
-	private JTextField txtAdress;
-	private final ButtonGroup grpSexo = new ButtonGroup();
-	private JTextField txtDtNascimento;
-	
+	private ButtonGroup grpSexo = new ButtonGroup();
 	// Data Formatter..
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
+	
+	
 	/**
-	 * Launch the application.
-	 */
+	* Auto-generated main method to display this JFrame
+	*/
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					MainFrame frame = new MainFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				MainFrame inst = new MainFrame();
+				//inst.setLocationRelativeTo(null);
+				inst.setVisible(true);
 			}
 		});
 	}
-
-	/**
-	 * Create the frame.
-	 */
+	
 	public MainFrame() {
 		super("Principal");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 502, 323);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		
-		JTabbedPane mainTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(mainTabbedPane, GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
-					.addContainerGap())
-		);
-		gl_contentPane.setVerticalGroup(
-			gl_contentPane.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(mainTabbedPane, GroupLayout.PREFERRED_SIZE, 265, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(84, Short.MAX_VALUE))
-		);
-		
-		panelCadastro = new JPanel();
-		panelCadastro.setForeground(Color.BLACK);
-		panelCadastro.setToolTipText("");
-		panelCadastro.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 255)));
-		mainTabbedPane.addTab("Register", null, panelCadastro, null);
-		mainTabbedPane.setEnabledAt(0, true);
-		
-		JLabel lblName = DefaultComponentFactory.getInstance().createLabel("Name: ");
-		
-		txtName = new JTextField();
-		txtName.setColumns(10);
-		
-		JLabel lblCpf = DefaultComponentFactory.getInstance().createLabel("Cpf: ");
-		
-		JLabel lblAdress = DefaultComponentFactory.getInstance().createLabel("Adress: ");
-		
-		JLabel dtNacimento = DefaultComponentFactory.getInstance().createLabel("Birth: ");
-		
-		txtCpf = new JTextField();
-		txtCpf.setColumns(10);
-		
-		txtAdress = new JTextField();
-		txtAdress.setColumns(10);
-		
-		JRadioButton rbtMasc = new JRadioButton("Man");
-		rbtMasc.setSelected(true);
-		grpSexo.add(rbtMasc);
-		
-		JRadioButton rbtFem = new JRadioButton("Women");
-		grpSexo.add(rbtFem);
-		
-		JLabel lblGender = DefaultComponentFactory.getInstance().createLabel("Gender: ");
-		
-		txtDtNascimento = new JTextField();
-		txtDtNascimento.setColumns(10);
-		
-		// Button Register
-		JButton btnRegister = new JButton("Register");
-		btnRegister.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				PessoaDTO pessoaDTO = new PessoaDTO();
-				try {
-					pessoaDTO.setNome(txtName.getText());
-					pessoaDTO.setEndereco(txtAdress.getText());
-					pessoaDTO.setCpf(Long.parseLong(txtCpf.getText()));
-
-					String nasc = txtDtNascimento.getText();				
-					pessoaDTO.setDtNasc(dateFormat.parse(nasc));				
-
-					char sexo = rbtMasc.isSelected() ? 'M' : 'W';
-					pessoaDTO.setSexo(sexo);
-
-					PessoaBO pessoaBO = new PessoaBO();
-					pessoaBO.cadastrar(pessoaDTO); 
-					UsefulMessage.addMsg(MainFrame.this, "Register made successfully..");
-
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					UsefulMessage.addMsg(MainFrame.this, e1.getMessage());
-				}
-
-			}
-		});
-		
-		//Button Clear
-		JButton btnClear = new JButton("Clear");
-		btnClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				txtName.setText(""); 
-				txtCpf.setText("");
-				txtAdress.setText("");
-				txtDtNascimento.setText("");
-				rbtMasc.setSelected(true);
-								
-			}
-		});
-		GroupLayout gl_panelCadastro = new GroupLayout(panelCadastro);
-		gl_panelCadastro.setHorizontalGroup(
-			gl_panelCadastro.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panelCadastro.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panelCadastro.createParallelGroup(Alignment.LEADING, false)
-							.addGroup(gl_panelCadastro.createSequentialGroup()
-								.addGroup(gl_panelCadastro.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblName)
-									.addComponent(lblCpf))
-								.addGap(24)
-								.addGroup(gl_panelCadastro.createParallelGroup(Alignment.TRAILING, false)
-									.addComponent(txtName)
-									.addComponent(txtCpf, GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)))
-							.addGroup(gl_panelCadastro.createSequentialGroup()
-								.addGroup(gl_panelCadastro.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblAdress)
-									.addComponent(dtNacimento))
-								.addGap(18)
-								.addGroup(gl_panelCadastro.createParallelGroup(Alignment.LEADING)
-									.addComponent(txtDtNascimento, GroupLayout.PREFERRED_SIZE, 302, GroupLayout.PREFERRED_SIZE)
-									.addComponent(txtAdress))))
-						.addGroup(gl_panelCadastro.createSequentialGroup()
-							.addComponent(lblGender)
-							.addGap(76)
-							.addComponent(rbtMasc)
-							.addGap(86)
-							.addComponent(rbtFem)))
-					.addContainerGap(84, Short.MAX_VALUE))
-				.addGroup(gl_panelCadastro.createSequentialGroup()
-					.addContainerGap(295, Short.MAX_VALUE)
-					.addComponent(btnClear, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnRegister)
-					.addContainerGap())
-		);
-		gl_panelCadastro.setVerticalGroup(
-			gl_panelCadastro.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panelCadastro.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblName)
-						.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblCpf)
-						.addComponent(txtCpf, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(13)
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblAdress)
-						.addComponent(txtAdress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblGender)
-						.addComponent(rbtMasc)
-						.addComponent(rbtFem))
-					.addGap(18)
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(txtDtNascimento, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(dtNacimento))
-					.addPreferredGap(ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
-					.addGroup(gl_panelCadastro.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnRegister)
-						.addComponent(btnClear))
-					.addContainerGap())
-		);
-		panelCadastro.setLayout(gl_panelCadastro);
-		
-		
-		
-		
-		
-		panelList = new JPanel();
-		mainTabbedPane.addTab("Listing", null, panelList, null);
-		GroupLayout groupLayout_1 = new GroupLayout(panelList);
-		groupLayout_1.setHorizontalGroup(
-			groupLayout_1.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 571, Short.MAX_VALUE)
-		);
-		groupLayout_1.setVerticalGroup(
-			groupLayout_1.createParallelGroup(Alignment.LEADING)
-				.addGap(0, 276, Short.MAX_VALUE)
-		);
-		panelList.setLayout(groupLayout_1);
-		contentPane.setLayout(gl_contentPane);
+		initGUI();
 	}
+	
+	private void initGUI() {
+		try {
+			GroupLayout thisLayout = new GroupLayout((JComponent)getContentPane());
+			getContentPane().setLayout(thisLayout);
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			this.setTitle("Principal");
+			{
+				mainTabbedPane = new JTabbedPane();
+				{
+					panelCadastro = new JPanel();
+					GroupLayout panelCadastroLayout = new GroupLayout((JComponent)panelCadastro);
+					panelCadastro.setLayout(panelCadastroLayout);
+					mainTabbedPane.addTab("Register", null, panelCadastro, null);
+					panelCadastro.setPreferredSize(new java.awt.Dimension(444, 262));
+					{
+						lblNome = new JLabel();
+						lblNome.setText("Name:");
+					}
+					{
+						txtNome = new JTextField();
+					}
+					{
+						txtEndereco = new JTextField();
+					}
+					{
+						lblEndereco = new JLabel();
+						lblEndereco.setText("Adress:");
+					}
+					{
+						txtCpf = new JTextField();
+					}
+					{
+						lblCpf = new JLabel();
+						lblCpf.setText("CPF:");
+					}
+					panelCadastroLayout.setHorizontalGroup(panelCadastroLayout.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(panelCadastroLayout.createParallelGroup()
+						    .addComponent(getJLabel1x(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblEndereco, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblCpf, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblNome, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(getJLabel1(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 87, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(panelCadastroLayout.createParallelGroup()
+						    .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						        .addComponent(txtNome, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
+						        .addGap(0, 91, Short.MAX_VALUE))
+						    .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						        .addComponent(txtCpf, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
+						        .addGap(0, 91, Short.MAX_VALUE))
+						    .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						        .addComponent(txtEndereco, GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
+						        .addGap(0, 91, Short.MAX_VALUE))
+						    .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						        .addComponent(getJTextField1(), GroupLayout.PREFERRED_SIZE, 231, GroupLayout.PREFERRED_SIZE)
+						        .addGap(0, 91, Short.MAX_VALUE))
+						    .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						        .addComponent(getRbtMasculino(), GroupLayout.PREFERRED_SIZE, 107, GroupLayout.PREFERRED_SIZE)
+						        .addGroup(panelCadastroLayout.createParallelGroup()
+						            .addComponent(getJRadioButton1(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+						            .addGroup(GroupLayout.Alignment.LEADING, panelCadastroLayout.createSequentialGroup()
+						                .addGap(0, 0, Short.MAX_VALUE)
+						                .addComponent(getBtnCadastrar(), GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+						                .addGap(11)))
+						        .addComponent(getBtnLimpar(), GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)))
+						.addContainerGap());
+					panelCadastroLayout.linkSize(SwingConstants.HORIZONTAL, new Component[] {lblCpf, lblNome, lblEndereco});
+					panelCadastroLayout.setVerticalGroup(panelCadastroLayout.createSequentialGroup()
+						.addContainerGap()
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(txtNome, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblNome, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(txtCpf, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblCpf, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(txtEndereco, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(lblEndereco, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(getRbtMasculino(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(getJRadioButton1(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(getJLabel1(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(getJTextField1(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(getJLabel1x(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGap(0, 23, GroupLayout.PREFERRED_SIZE)
+						.addGroup(panelCadastroLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+						    .addComponent(getBtnLimpar(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+						    .addComponent(getBtnCadastrar(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
+						.addContainerGap(16, 16));
+				}
+				{
+					panelListagem = new JPanel();
+					GroupLayout panelListagemLayout = new GroupLayout((JComponent)panelListagem);
+					panelListagem.setLayout(panelListagemLayout);
+					mainTabbedPane.addTab("Listing", null, panelListagem, null);
+					panelListagem.setPreferredSize(new java.awt.Dimension(223, 207));
+					panelListagemLayout.setHorizontalGroup(panelListagemLayout.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(getTableListagem(), 0, 422, Short.MAX_VALUE)
+						.addContainerGap());
+					panelListagemLayout.setVerticalGroup(panelListagemLayout.createSequentialGroup()
+						.addContainerGap()
+						.addComponent(getTableListagem(), GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(214, Short.MAX_VALUE));
+				}
+			}
+			thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
+				.addContainerGap()
+				.addComponent(mainTabbedPane, GroupLayout.PREFERRED_SIZE, 286, GroupLayout.PREFERRED_SIZE)
+				.addContainerGap(19, Short.MAX_VALUE));
+			thisLayout.setHorizontalGroup(thisLayout.createSequentialGroup()
+				.addContainerGap()
+				.addComponent(mainTabbedPane, 0, 449, Short.MAX_VALUE)
+				.addContainerGap());
+			pack();
+			this.setSize(491, 364);
+		} catch (Exception e) {
+		    //add your error handling code here
+			e.printStackTrace();
+		}
+	}
+	
+	private JRadioButton getRbtMasculino() {
+		if(rbtMasculino == null) {
+			rbtMasculino = new JRadioButton();
+			rbtMasculino.setText("Man");
+			rbtMasculino.setSelected(true);
+			getGrpSexo().add(rbtMasculino);
+		}
+		return rbtMasculino;
+	}
+	
+	private JRadioButton getJRadioButton1() {
+		if(rbtFeminino == null) {
+			rbtFeminino = new JRadioButton();
+			rbtFeminino.setText("Women");
+			getGrpSexo().add(rbtFeminino);
+		}
+		return rbtFeminino;
+	}
+	
+	private JLabel getJLabel1() {
+		if(lblSexo == null) {
+			lblSexo = new JLabel();
+			lblSexo.setText("Gender:");
+		}
+		return lblSexo;
+	}
+	
+	private ButtonGroup getGrpSexo() {
+		if(grpSexo == null) {
+			grpSexo = new ButtonGroup();
+		}
+		return grpSexo;
+	}
+	
+	private JTextField getJTextField1() {
+		if(txtNasc == null) {
+			txtNasc = new JTextField();
+		}
+		return txtNasc;
+	}
+	
+	private JLabel getJLabel1x() {
+		if(lblNasc == null) {
+			lblNasc = new JLabel();
+			lblNasc.setText("Birth:");
+		}
+		return lblNasc;
+	}
+	
+	private JButton getBtnLimpar() {
+		if(btnLimpar == null) {
+			btnLimpar = new JButton();
+			btnLimpar.setText("Clear");
+			btnLimpar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					txtNome.setText("");
+					txtCpf.setText("");
+					txtEndereco.setText("");
+					txtNasc.setText("");
+					rbtMasculino.setSelected(true);
+				}
+			});
+		}
+		return btnLimpar;
+	}
+	
+	private JButton getBtnCadastrar() {
+		if(btnCadastrar == null) {
+			btnCadastrar = new JButton();
+			btnCadastrar.setText("Register");
+			btnCadastrar.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					PessoaDTO pessoaDTO = new PessoaDTO();
+					try {
+						pessoaDTO.setNome(txtNome.getText());
+						pessoaDTO.setEndereco(txtEndereco.getText());
+						pessoaDTO.setCpf(Long.parseLong(txtCpf.getText()));
+
+						String nasc = txtNasc.getText();
+						pessoaDTO.setDtNasc(dateFormat.parse(nasc));
+						char sexo = rbtMasculino.isSelected() ? 'M' : 'F';
+						pessoaDTO.setSexo(sexo);
+
+						PessoaBO pessoaBO = new PessoaBO();
+						pessoaBO.cadastrar(pessoaDTO);
+						UsefulMessage.addMsg(MainFrame.this, "Done successfully record!");
+					} catch (Exception e) {
+						e.printStackTrace();
+						UsefulMessage.addMsg(MainFrame.this, e.getMessage());
+					}
+				}
+			});
+		}
+		return btnCadastrar;
+	}
+
+
+
+
+
+	
+	private JTable getTableListagem() {
+		if(tableListagem == null) {
+			TableModel tableListagemModel = new DefaultTableModel(
+							new String[][] { { "One", "Two" }, { "Three", "Four" } },
+							new String[] { "Name", "CPF", "Adress", "Gender", "Birth" });
+			tableListagem = new JTable();
+			tableListagem.setModel(tableListagemModel);
+		}
+		return tableListagem;
+	}
+
 }
