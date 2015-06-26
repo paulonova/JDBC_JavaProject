@@ -1,8 +1,11 @@
 package se.educ.devmedia.jdbc.bo;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import javax.xml.bind.ValidationException;
 
 import se.educ.devmedia.jdbc.dao.PessoaDAO;
 import se.educ.devmedia.jdbc.dto.PessoaDTO;
@@ -50,6 +53,80 @@ public class PessoaBO {
 		
 		return returnList;
 	}	
+	
+	// Methods to validate fields..
+	
+	public boolean validName(String name) throws ValidationException{
+		boolean isValid = true;
+		
+		if(name == null || name.equals("")){
+			isValid = false;
+			throw new ValidationException("Field name is required!");
+		}else if(name.length() > 45){
+			isValid = false;
+			throw new ValidationException("Field name suport just 30 characters");
+		}
+		return isValid;
+	}
+	
+	public boolean validCPF(String cpf) throws ValidationException{
+		boolean isValid = true;
+		
+		if(cpf == null || cpf.equals("")){
+			isValid = false;
+			throw new ValidationException("Field CPF is required!");
+		}else if(cpf.length() != 11){
+			isValid = false;
+			throw new ValidationException("Field CPF must be 11 digits");
+		}else {
+			char[] digits = cpf.toCharArray();
+			for(char digit : digits){
+				if (!Character.isDigit(digit)){
+					isValid = false;
+					throw new ValidationException("Field CPF is not a number!");
+				}
+			}
+			
+		}
+		
+		return isValid;
+	}
+	
+	public boolean validAdress(String adress) throws ValidationException{
+		boolean isValid = true;
+		
+		if(adress == null || adress.equals("")){
+			isValid = false;
+			throw new ValidationException("Field Adress is required!");
+		}else if(adress.length() > 45){
+			isValid = false;
+			throw new ValidationException("Field Adress suport just 45 characters");
+		}
+		
+		return isValid;
+	}
+	
+	public boolean validBirth(String birth) throws ValidationException{
+		boolean isValid = true;
+		
+		if(birth == null || birth.equals("")){
+			isValid = false;
+			throw new ValidationException("Field Birth is required!");
+			
+		}else {
+			try {
+				dateFormat.parse(birth);
+			} catch (ParseException e) {
+				e.printStackTrace();
+				isValid = false;
+				throw new ValidationException("Birth format is not correct!");
+			}
+		}
+		
+		return isValid;
+	}
+	
+	
 
 }
  

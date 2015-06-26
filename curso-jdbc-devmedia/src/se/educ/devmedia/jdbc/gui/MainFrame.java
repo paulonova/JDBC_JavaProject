@@ -28,6 +28,7 @@ import se.educ.devmedia.jdbc.dto.PessoaDTO;
 import se.educ.devmedia.jdbc.util.UsefulMessage;
 
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 
 public class MainFrame extends JFrame {
 
@@ -281,19 +282,33 @@ public class MainFrame extends JFrame {
 			btnCadastrar.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					PessoaDTO pessoaDTO = new PessoaDTO();
+					PessoaBO pessoaBO = new PessoaBO();
 					try {
-						pessoaDTO.setNome(txtNome.getText());
-						pessoaDTO.setEndereco(txtEndereco.getText());
-						pessoaDTO.setCpf(Long.parseLong(txtCpf.getText()));
-
-						String nasc = txtNasc.getText();
-						pessoaDTO.setDtNasc(dateFormat.parse(nasc));
+						String name = txtNome.getText();
+						String cpf = txtCpf.getText();
+						String adress = txtEndereco.getText();
+						String birth = txtNasc.getText();
+						
+						pessoaBO.validName(name);
+						pessoaBO.validCPF(cpf);
+						pessoaBO.validAdress(adress);
+						pessoaBO.validBirth(birth); 
+						
+						pessoaDTO.setNome(name);
+						pessoaDTO.setEndereco(adress);					
+						pessoaDTO.setCpf(Long.parseLong(cpf)); 
+						pessoaDTO.setDtNasc(dateFormat.parse(birth));
 						char sexo = rbtMasculino.isSelected() ? 'M' : 'F';
 						pessoaDTO.setSexo(sexo);
 
-						PessoaBO pessoaBO = new PessoaBO();
+						
 						pessoaBO.cadastrar(pessoaDTO);
 						UsefulMessage.addMsg(MainFrame.this, "Done successfully record!");
+						
+						//Validation to read a new register after registering
+						MainFrame.this.dispose(); 			// Close the window where I am..
+						main(null);							// open a new window and update the new register..
+						
 					} catch (Exception e) {
 						e.printStackTrace();
 						UsefulMessage.addMsg(MainFrame.this, e.getMessage());
@@ -335,6 +350,7 @@ public class MainFrame extends JFrame {
 	private JScrollPane getScrollList(){
 		if(scrollList == null){
 			scrollList = new JScrollPane();
+			scrollList.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			scrollList.setViewportView(getTableListagem()); 
 		}
 		
