@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
@@ -46,12 +47,15 @@ public class MainFrame extends JFrame {
 	private JTable tableListagem;
 	private JLabel lblNasc;
 	private JTextField txtNasc;
+	private JScrollPane scrollList;
+
 	
 	private JPanel panelCadastro;
 	private JTextField txtCpf;
 	private ButtonGroup grpSexo = new ButtonGroup();
 	// Data Formatter..
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	
 	
 	
 	/**
@@ -168,6 +172,8 @@ public class MainFrame extends JFrame {
 						    .addComponent(getBtnCadastrar(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 28, GroupLayout.PREFERRED_SIZE))
 						.addContainerGap(16, 16));
 				}
+				
+				
 				{
 					panelListagem = new JPanel();
 					GroupLayout panelListagemLayout = new GroupLayout((JComponent)panelListagem);
@@ -176,13 +182,15 @@ public class MainFrame extends JFrame {
 					panelListagem.setPreferredSize(new java.awt.Dimension(223, 207));
 					panelListagemLayout.setHorizontalGroup(panelListagemLayout.createSequentialGroup()
 						.addContainerGap()
-						.addComponent(getTableListagem(), 0, 422, Short.MAX_VALUE)
+						.addComponent(getScrollList(), 0, 422, Short.MAX_VALUE)
 						.addContainerGap());
 					panelListagemLayout.setVerticalGroup(panelListagemLayout.createSequentialGroup()
 						.addContainerGap()
-						.addComponent(getTableListagem(), GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)
+						.addComponent(getScrollList(), GroupLayout.PREFERRED_SIZE, 190, GroupLayout.PREFERRED_SIZE) 
 						.addContainerGap(214, Short.MAX_VALUE));
 				}
+				
+				
 			}
 			thisLayout.setVerticalGroup(thisLayout.createSequentialGroup()
 				.addContainerGap()
@@ -297,19 +305,44 @@ public class MainFrame extends JFrame {
 	}
 
 
-
-
-
+	// Table Listing..
 	
 	private JTable getTableListagem() {
-		if(tableListagem == null) {
-			TableModel tableListagemModel = new DefaultTableModel(
-							new String[][] { { "One", "Two" }, { "Three", "Four" } },
-							new String[] { "Name", "CPF", "Adress", "Gender", "Birth" });
-			tableListagem = new JTable();
-			tableListagem.setModel(tableListagemModel);
+		
+		PessoaBO pessoaBO = new PessoaBO();
+		
+		try {
+			String[][] list = pessoaBO.listing();
+			if(tableListagem == null) {
+				
+				TableModel tableListagemModel = new DefaultTableModel(
+								//new String[][] { { "One", "Two" }, { "Three", "Four" } },
+								list,
+								new String[] { "ID", "Name", "CPF", "Adress", "Gender", "Birth" });
+				tableListagem = new JTable();
+				tableListagem.setModel(tableListagemModel);
+			}
+			return tableListagem;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			UsefulMessage.addMsg(MainFrame.this, e.getMessage());
 		}
-		return tableListagem;
+		
+		return null;
+	}
+	
+	private JScrollPane getScrollList(){
+		if(scrollList == null){
+			scrollList = new JScrollPane();
+			scrollList.setViewportView(getTableListagem()); 
+		}
+		
+		
+		return scrollList;
+		
 	}
 
+	
 }
+
