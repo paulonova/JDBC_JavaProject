@@ -28,9 +28,9 @@ public class PessoaBO {
 		
 	}
 	
-	public String [] [] listing() throws BusinessException{
+	public String [] [] listing(List<Integer> idPerson) throws BusinessException{
 		
-		int columnNumber = 6;
+		int columnNumber = 8;
 		String [] [] returnList = null;
 		try {
 			PessoaDAO pessoaDAO = new PessoaDAO();
@@ -40,11 +40,14 @@ public class PessoaBO {
 			for (int i = 0; i < list.size(); i++) {
 				PessoaDTO pessoa = list.get(i);
 				returnList[i][0] = pessoa.getIdPessoa().toString();
+				idPerson.add(pessoa.getIdPessoa());
 				returnList[i][1] = pessoa.getNome();
 				returnList[i][2] = pessoa.getCpf().toString();
 				returnList[i][3] = pessoa.getEndereco();
 				returnList[i][4] = pessoa.getSexo() == 'M' ? "Man" : "Woman"; 
-				returnList[i][5] = dateFormat.format(pessoa.getDtNasc());			
+				returnList[i][5] = dateFormat.format(pessoa.getDtNasc());
+				returnList[i][6] = "Delete";	
+				returnList[i][7] = "Edit";	
 			}			
 			
 		} catch (Exception e) {
@@ -52,7 +55,22 @@ public class PessoaBO {
 		} 
 		
 		return returnList;
-	}	
+	}
+	
+	
+	// Method to remove by ID..
+	public void removePerson(Integer idPerson) throws BusinessException{ 
+		
+		try {
+			PessoaDAO pessoaDAO = new PessoaDAO();
+			pessoaDAO.delete(idPerson); 
+			
+		} catch (Exception e) {
+			throw new BusinessException(e.getMessage());
+		}
+		
+	}
+	
 	
 	// Methods to validate fields..
 	

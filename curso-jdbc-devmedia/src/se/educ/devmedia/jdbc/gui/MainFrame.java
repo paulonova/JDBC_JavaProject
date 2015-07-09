@@ -5,13 +5,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -26,6 +31,7 @@ import javax.swing.table.TableModel;
 
 import se.educ.devmedia.jdbc.bo.PessoaBO;
 import se.educ.devmedia.jdbc.dto.PessoaDTO;
+import se.educ.devmedia.jdbc.exception.BusinessException;
 import se.educ.devmedia.jdbc.util.UsefulMessage;
 
 import javax.swing.JTable;
@@ -69,6 +75,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private JTable tableListagem;
 	private JLabel lblNasc;
 	private JTextField txtNasc;
+	private List<Integer> idPerson = new ArrayList<Integer>();
 	
 	// Formatter de datas
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -328,18 +335,61 @@ public class MainFrame extends javax.swing.JFrame {
 	}
 	
 	private JTable getTableListagem() {
-		PessoaBO pessoaBO = new PessoaBO();
+		final PessoaBO pessoaBO = new PessoaBO();
 		try {
-			String[][] lista = pessoaBO.listing();
+			String[][] lista = pessoaBO.listing(idPerson);
 			if(tableListagem == null) {
-				TableModel tabelListagemModel = 
-						new DefaultTableModel(
+				TableModel tabelListagemModel = new DefaultTableModel(
 								lista,
-								new String[] { "Id", "Name", "CPF", "Adress", "Gender", "Birth" });
+								new String[] { "Id", "Name", "CPF", "Adress", "Gender", "Birth", "", "" }); 
 				tableListagem = new JTable();
 				tableListagem.setModel(tabelListagemModel);
-				tableListagem.setPreferredSize(new java.awt.Dimension(417, 226));
+				//tableListagem.setPreferredSize(new java.awt.Dimension(417, 226));				
 			}
+			
+			
+			// Actions javax.swing.Action!
+			//DELETE
+			Action actionDelete = new AbstractAction() {
+				
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					
+					int answer = JOptionPane.showConfirmDialog(MainFrame.this, "This row will be deleted! Are you sure?");
+					
+					if(answer == 0){
+						JTable table = (JTable) actionEvent.getSource();
+						int line = Integer.parseInt(actionEvent.getActionCommand()); // Get the columnnumber starts from 0 ..
+						((DefaultTableModel) table.getModel()).removeRow(line);
+						try {
+							pessoaBO.removePerson(idPerson.get(line));
+							idPerson.remove(line);
+							UsefulMessage.addMsg(MainFrame.this, "Person deleted successfully!"); 
+							
+						} catch (BusinessException e) {
+							UsefulMessage.addMsg(MainFrame.this, e.getMessage());
+						} 
+						
+					}
+					
+					
+				}
+			};
+			
+			// EDIT
+			Action actionEdit = new AbstractAction() {
+				
+				@Override
+				public void actionPerformed(ActionEvent actionEvent) {
+					
+					
+				}
+			};
+			
+			ButtonColumn buttonColumnDelete = new ButtonColumn(tableListagem, actionDelete, 6);
+			ButtonColumn buttonColumnEdit = new ButtonColumn(tableListagem, actionEdit, 7);// 7 means the place in head column the buttom occupate (de 0 até 7) 
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			UsefulMessage.addMsg(MainFrame.this, e.getMessage());
