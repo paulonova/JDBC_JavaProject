@@ -164,7 +164,83 @@ public class PessoaDAO implements GenericoDAO<PessoaDTO> {
 	}
 
 	
-
+	public List<PessoaDTO> consultList(String name, Long cpf, String sexo, String orderBy) throws PersistenceExceptions{ 
+		
+		List<PessoaDTO> list = new ArrayList<PessoaDTO>();
+		
+		try {
+			Connection connection = ConexaoUtil.getInstance().getConnection();
+			String sql = "SELECT * FROM tb_pessoa";
+			
+			boolean last = false;
+			
+			if(name != null && !name.equals("")){
+				sql += " WHERE nome LIKE ?";  // 
+				last = true;
+				
+			}
+			
+			if(cpf != null && !cpf.equals("")){
+				if(last){
+					sql += " AND ";
+					
+				}else {
+					sql += " WHERE ";
+					last = true;
+				}
+				sql += " cpf LIKE ?";
+				
+			}
+			
+			if (sexo != null && !sexo.equals("")) {
+				if(last){
+					sql += " AND ";
+					
+				}else {
+					sql += " WHERE ";
+				}
+				sql += " sexo=?";
+			}
+			
+			sql += " ORDER BY " + orderBy;
+			PreparedStatement statement = connection.prepareStatement(sql);
+			int cont = 0;
+			
+			if (name != null && !name.equals("")) {
+				statement.setString(++cont, "%" + name + "%"); // '%' used to filter words with LIKE in our search.. (Read about LIKE in SQL)
+			}
+			
+			if (cpf != null && !cpf.equals("")) {
+				statement.setString(++cont, "%" + cpf + "%");
+			}
+			
+			if (sexo != null && !sexo.equals("")) {
+				statement.setString(++cont, sexo);
+			}
+			
+			ResultSet resultSet = statement.executeQuery();
+			
+			while (resultSet.next()) {
+				PessoaDTO pessoaDTO = new PessoaDTO();
+				pessoaDTO.setIdPessoa(resultSet.getInt("id_pessoa"));
+				pessoaDTO.setNome(resultSet.getString("nome"));
+				pessoaDTO.setCpf(resultSet.getLong("cpf"));
+				pessoaDTO.setDtNasc(resultSet.getDate("dt_nasc"));
+				pessoaDTO.setEndereco(resultSet.getString("endereco"));
+				pessoaDTO.setSexo(resultSet.getString("sexo").charAt(0));
+				
+				list.add(pessoaDTO);
+			}			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new PersistenceExceptions(e.getMessage(), e);
+		}
+		
+		return list;
+		
+	}
 
 
 }

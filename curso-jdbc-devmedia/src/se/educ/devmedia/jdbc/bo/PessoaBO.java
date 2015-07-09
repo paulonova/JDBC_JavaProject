@@ -127,6 +127,34 @@ public class PessoaBO {
 	}
 	
 	
+public String [] [] listConsult(String name, Long cpf, char gender, String orderBy ) throws BusinessException{ 
+		
+		int columnNumber = 6;
+		String [] [] returnList = null;
+		try {
+			PessoaDAO pessoaDAO = new PessoaDAO();
+			
+			List<PessoaDTO> list = pessoaDAO.consultList(name, cpf, String.valueOf(gender), orderBy); 
+			returnList = new String [list.size()] [columnNumber];
+			
+			for (int i = 0; i < list.size(); i++) {
+				PessoaDTO pessoa = list.get(i);
+				returnList[i][0] = pessoa.getIdPessoa().toString();
+				returnList[i][1] = pessoa.getNome();
+				returnList[i][2] = pessoa.getCpf().toString();
+				returnList[i][3] = pessoa.getEndereco();
+				returnList[i][4] = pessoa.getSexo() == 'M' ? "Man" : "Woman"; 
+				returnList[i][5] = dateFormat.format(pessoa.getDtNasc());			
+			}			
+			
+		} catch (Exception e) {
+			throw new BusinessException(e.getMessage());
+		} 
+		
+		return returnList;
+	}	
+	
+	
 
 }
  
