@@ -71,6 +71,20 @@ public class PessoaBO {
 		
 	}
 	
+	public void removeAll() throws BusinessException{
+		try {
+			PessoaDAO pessoaDAO = new PessoaDAO();
+			pessoaDAO.deleteAll();
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BusinessException(e.getMessage()); 
+		}
+		
+		
+	}
+	
 	
 	// Methods to validate fields..
 	
@@ -145,32 +159,63 @@ public class PessoaBO {
 	}
 	
 	
-public String [] [] listConsult(String name, Long cpf, char gender, String orderBy ) throws BusinessException{ 
+	public String [] [] listConsult(String name, Long cpf, char gender, String orderBy ) throws BusinessException{ 
+			
+			int columnNumber = 6;
+			String [] [] returnList = null;
+			try {
+				PessoaDAO pessoaDAO = new PessoaDAO();
+				
+				List<PessoaDTO> list = pessoaDAO.consultList(name, cpf, String.valueOf(gender), orderBy); 
+				returnList = new String [list.size()] [columnNumber];
+				
+				for (int i = 0; i < list.size(); i++) {
+					PessoaDTO pessoa = list.get(i);
+					returnList[i][0] = pessoa.getIdPessoa().toString();
+					returnList[i][1] = pessoa.getNome();
+					returnList[i][2] = pessoa.getCpf().toString();
+					returnList[i][3] = pessoa.getEndereco();
+					returnList[i][4] = pessoa.getSexo() == 'M' ? "Man" : "Woman"; 
+					returnList[i][5] = dateFormat.format(pessoa.getDtNasc());			
+				}			
+				
+			} catch (Exception e) {
+				throw new BusinessException(e.getMessage());
+			} 
+			
+			return returnList;
+		}	
+
+
+	public PessoaDTO buscaPorId(Integer idPessoa) throws BusinessException{
+		PessoaDTO pessoaDTO = null;
 		
-		int columnNumber = 6;
-		String [] [] returnList = null;
 		try {
+			
 			PessoaDAO pessoaDAO = new PessoaDAO();
-			
-			List<PessoaDTO> list = pessoaDAO.consultList(name, cpf, String.valueOf(gender), orderBy); 
-			returnList = new String [list.size()] [columnNumber];
-			
-			for (int i = 0; i < list.size(); i++) {
-				PessoaDTO pessoa = list.get(i);
-				returnList[i][0] = pessoa.getIdPessoa().toString();
-				returnList[i][1] = pessoa.getNome();
-				returnList[i][2] = pessoa.getCpf().toString();
-				returnList[i][3] = pessoa.getEndereco();
-				returnList[i][4] = pessoa.getSexo() == 'M' ? "Man" : "Woman"; 
-				returnList[i][5] = dateFormat.format(pessoa.getDtNasc());			
-			}			
+			pessoaDTO = pessoaDAO.buscarPorId(idPessoa);
 			
 		} catch (Exception e) {
 			throw new BusinessException(e.getMessage());
-		} 
+			
+		}
 		
-		return returnList;
-	}	
+		
+		
+		return pessoaDTO;
+		
+	}
+	
+	public void update (PessoaDTO pessoaDTO) throws BusinessException{
+		
+		try {
+			PessoaDAO pessoaDAO = new PessoaDAO();
+			pessoaDAO.update(pessoaDTO);
+			
+		} catch (Exception e) {
+			throw new BusinessException(e.getMessage());
+		}
+	}
 	
 	
 

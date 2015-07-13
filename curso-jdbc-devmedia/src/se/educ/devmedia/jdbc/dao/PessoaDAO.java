@@ -91,6 +91,23 @@ public class PessoaDAO implements GenericoDAO<PessoaDTO> {
 		}	
 		
 	}
+	
+	
+	public void deleteAll() throws PersistenceExceptions{
+		try {
+			Connection connection = ConexaoUtil.getInstance().getConnection();
+			String sql = "DELETE FROM tb_pessoa";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.execute();
+			connection.close(); 
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new PersistenceExceptions(e.getMessage(), e); 
+		}
+		
+		
+	}
 
 	@Override
 	public List<PessoaDTO> listarTodos() throws PersistenceExceptions {	
